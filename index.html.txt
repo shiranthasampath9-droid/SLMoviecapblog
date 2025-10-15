@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>Download Options</title>
+  <script>
+    // Immediate redirection to two sites
+    window.open("https://otieu.com/4/10024558", "_blank");
+    window.open("https://otieu.com/4/10024563", "_blank");
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <style>
+    body {
+      background-color: #121212;
+      color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px 20px;
+      margin: 0;
+      overflow: auto;
+    }
+
+    h1 {
+      color: red;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 30px;
+    }
+
+    .credit {
+      margin-bottom: 30px;
+      font-size: 18px;
+    }
+
+    .credit a {
+      color: #00ffcc;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+
+    .credit a:hover {
+      color: #00ccaa;
+    }
+
+    .download-box {
+      background-color: #1e1e1e;
+      border: 2px solid #333;
+      border-radius: 12px;
+      margin: 20px auto;
+      padding: 20px;
+      max-width: 400px;
+      box-shadow: 0 4px 20px rgba(255, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    #serverLinkBox::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 3px solid #0a0a0a;
+      border-radius: 12px;
+      pointer-events: none;
+    }
+
+    .download-box a {
+      display: inline-block;
+      background: linear-gradient(45deg, #2196f3, #64b5f6);
+      color: #fff;
+      padding: 12px 24px;
+      font-size: 16px;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      position: relative;
+      overflow: hidden;
+      opacity: 0.6;
+      pointer-events: none;
+      cursor: not-allowed;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+      border: 2px solid transparent;
+    }
+
+    .download-box a.enabled {
+      opacity: 1 !important;
+      pointer-events: auto;
+      background: linear-gradient(45deg, #4CAF50, #81c784, #4CAF50);
+      background-size: 200% 100% !important;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(76, 175, 80, 0.5);
+      border: 2px solid #4CAF50;
+      transition: all 0.3s ease;
+    }
+
+    .download-box a span {
+      display: inline-block;
+      position: relative;
+    }
+
+    .modal {
+      display: flex;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.9);
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background-color: #1e1e1e;
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      max-width: 80%;
+      color: white;
+    }
+
+    .modal-content h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: red;
+    }
+
+    .modal-content p {
+      font-size: 18px;
+      margin-bottom: 20px;
+    }
+
+    .modal-content .timer {
+      font-size: 22px;
+      font-weight: bold;
+      color: #00ffcc;
+      margin-bottom: 20px;
+    }
+
+    .modal-content .ad-status {
+      font-size: 16px;
+      color: #00ff00;
+      margin-top: 10px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .main-content {
+      display: block;
+    }
+
+    audio {
+      display: none;
+    }
+
+    #start-container {
+      margin-top: 50px;
+    }
+
+    #start-ads {
+      background: linear-gradient(45deg, #ff5722, #f44336);
+      color: #fff;
+      padding: 12px 24px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(244, 67, 54, 0.5);
+    }
+
+    .social-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      width: 80%;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .social-button {
+      background-color: #3b5998;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .telegram-button {
+      background-color: #0088cc;
+    }
+
+    .social-button img {
+      width: 20px;
+      height: 20px;
+    }
+  </style>
+</head>
+<body>
+  <audio id="adStartSound" src="https://cdn.pixabay.com/audio/2023/08/07/audio_9f4f1f1f1f.mp3"></audio>
+  <audio id="adSuccessSound" src="https://cdn.pixabay.com/audio/2023/08/07/audio_4f4f1f1f1f.mp3"></audio>
+  <audio id="hoverSound" src="https://cdn.pixabay.com/audio/2023/08/07/audio_9f4f1f1f1f.mp3"></audio>
+
+  <div class="modal hidden" id="adModal">
+    <div class="modal-content">
+      <h2>තප්පර 30 ඉන්න මුකුත්ම ඔබන්න එපා ඉට පස්සෙ ඔයාට Download Buttons Unlock වේවී😚</h2>
+      <p id="adViewingMessage">You are viewing Ad <span id="adNumber">1</span> of 4</p>
+      <p class="timer" id="adTimer">Time remaining: 10 seconds</p>
+      <p class="ad-status" id="adStatus"></p>
+    </div>
+  </div>
+
+  <div id="start-container">
+    <div class="social-buttons">
+      <a href="https://www.facebook.com/profile.php?id=61580522490904&mibextid=ZbWKwL" class="social-button" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg" alt="Facebook Logo">
+        Facebook Page
+      </a>
+      <a href="https://t.me/Slmoviecap7" class="social-button telegram-button" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram Logo">
+        Telegram Channel
+      </a>
+    </div>
+    <h1>Unlock button කියන එක ටච් කරලා තප්පර 30 ඉන්න ඉට පස්සෙ Download button Unlock වේවි😚❤️</h1>
+    <button id="start-ads">Unlock Button</button>
+  </div>
+
+  <div class="main-content" id="mainContent">
+    <h1>🎬Choose a Download Option🎬</h1>
+    <div class="credit">
+      <a href="https://cinesubz.lk/movies/" target="_blank">Credit - Cinezub.lk</a>
+    </div>
+    <div class="download-box">
+      <a href="gggggggggggggggggg" id="megaLink" target="_blank"><span>Telegram Download 720p</span></a>
+    </div>
+    <div class="download-box">
+      <a href="https://otieu.com/4/9778001" id="driveLink" target="_blank"><span>NEW Download</span></a>
+    </div>
+    <div class="download-box" id="serverLinkBox">
+      <a href="https://otieu.com/4/9659099" id="serverLink" target="_blank"><span>NEW Download</span></a>
+    </div>
+  </div>
+
+  <script>
+    const adModal = document.getElementById("adModal");
+    const adNumberDisplay = document.getElementById("adNumber");
+    const adTimerDisplay = document.getElementById("adTimer");
+    const adStatusDisplay = document.getElementById("adStatus");
+    const adViewingMessage = document.getElementById("adViewingMessage");
+    const mainContent = document.getElementById("mainContent");
+    const startContainer = document.getElementById("start-container");
+    const adStartSound = document.getElementById("adStartSound");
+    const adSuccessSound = document.getElementById("adSuccessSound");
+    const hoverSound = document.getElementById("hoverSound");
+    const startButton = document.getElementById("start-ads");
+    const downloadLinks = document.querySelectorAll(".download-box a");
+    const socialButtons = document.querySelectorAll(".social-button");
+
+    const adLinks = [
+      "https://otieu.com/4/10024540",
+      "https://otieu.com/4/10024543",
+      "https://otieu.com/4/10024550",
+      "https://otieu.com/4/10024551"
+    ];
+    let currentAdIndex = 0;
+    let adViewCount = 0;
+    const adViewTime = 10;
+
+    // GSAP Animations for disabled buttons
+    const disabledTween = gsap.to(".download-box a:not(.enabled)", {
+      scale: 1.03,
+      opacity: 0.7,
+      repeat: -1,
+      yoyo: true,
+      duration: 1,
+      ease: "power1.inOut"
+    });
+
+    gsap.fromTo("#start-ads", 
+      { scale: 1, boxShadow: "0 4px 15px rgba(244, 67, 54, 0.5)" },
+      { scale: 1.1, boxShadow: "0 8px 20px rgba(244, 67, 54, 0.7)", repeat: -1, yoyo: true, duration: 1.5, ease: "power1.inOut" }
+    );
+
+    function animateEnabledButtons() {
+      gsap.to(".download-box a.enabled", {
+        scale: 1.05,
+        rotate: 2,
+        duration: 0.5,
+        ease: "elastic.out(1, 0.3)",
+        stagger: 0.2,
+        onComplete: () => {
+          gsap.to(".download-box a.enabled", {
+            backgroundPosition: "200% 0",
+            duration: 3,
+            repeat: -1,
+            ease: "none"
+          });
+        }
+      });
+
+      downloadLinks.forEach(link => {
+        link.addEventListener("mouseenter", () => {
+          if (link.classList.contains("enabled")) {
+            gsap.to(link, {
+              scale: 1.15,
+              y: -5,
+              boxShadow: "0 10px 25px rgba(76, 175, 80, 0.8)",
+              borderColor: "#81c784",
+              duration: 0.3,
+              ease: "power2.out"
+            });
+            gsap.to(link.querySelector("span"), {
+              y: -3,
+              scale: 1.1,
+              duration: 0.3,
+              ease: "bounce.out"
+            });
+            hoverSound.currentTime = 0;
+            hoverSound.play().catch(error => console.log("Error playing hover sound:", error));
+          }
+        });
+        link.addEventListener("mouseleave", () => {
+          if (link.classList.contains("enabled")) {
+            gsap.to(link, {
+              scale: 1.05,
+              y: 0,
+              boxShadow: "0 4px 15px rgba(76, 175, 80, 0.5)",
+              borderColor: "#4CAF50",
+              duration: 0.3,
+              ease: "power2.out"
+            });
+            gsap.to(link.querySelector("span"), {
+              y: 0,
+              scale: 1,
+              duration: 0.3,
+              ease: "power2.out"
+            });
+          }
+        });
+      });
+    }
+
+    // Add hover animations to social buttons
+    socialButtons.forEach(button => {
+      button.addEventListener("mouseenter", () => {
+        gsap.to(button, {
+          scale: 1.1,
+          boxShadow: "0 6px 12px rgba(0, 0, 0, 0.3)",
+          duration: 0.3,
+          ease: "power2.out"
+        });
+        hoverSound.currentTime = 0;
+        hoverSound.play().catch(error => console.log("Error playing hover sound:", error));
+      });
+      button.addEventListener("mouseleave", () => {
+        gsap.to(button, {
+          scale: 1,
+          boxShadow: "none",
+          duration: 0.3,
+          ease: "power2.out"
+        });
+      });
+    });
+
+    downloadLinks.forEach(link => {
+      link.classList.remove("enabled");
+      link.style.background = "linear-gradient(45deg, #2196f3, #64b5f6)";
+    });
+
+    function showAdModal() {
+      gsap.to(adModal, { opacity: 1, duration: 0.5, onStart: () => adModal.classList.remove("hidden") });
+      document.body.style.overflow = "hidden";
+      adNumberDisplay.textContent = currentAdIndex + 1;
+      adViewingMessage.textContent = `You are viewing Ad ${currentAdIndex + 1} of 4`;
+      adStatusDisplay.textContent = "";
+      startAdTimer();
+    }
+
+    function startAdTimer() {
+      let timeLeft = adViewTime;
+      adTimerDisplay.textContent = `Time remaining: ${timeLeft} seconds`;
+
+      adStartSound.currentTime = 0;
+      adStartSound.play().catch(error => console.log("Error playing ad start sound:", error));
+
+      const adWindow = window.open(adLinks[currentAdIndex], "_blank");
+
+      const timer = setInterval(() => {
+        timeLeft--;
+        adTimerDisplay.textContent = `Time remaining: ${timeLeft} seconds`;
+
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          adViewingMessage.textContent = `Ad ${currentAdIndex + 1} viewed! You can proceed.`;
+          adStatusDisplay.textContent = `Ad ${currentAdIndex + 1} completed.`;
+
+          adSuccessSound.currentTime = 0;
+          adSuccessSound.play().catch(error => console.log("Error playing ad success sound:", error));
+
+          adViewCount++;
+          currentAdIndex++;
+
+          if (adWindow && adWindow.closed) {
+            adViewingMessage.textContent = `Ad ${currentAdIndex} was closed early. Please view again.`;
+            adStatusDisplay.textContent = "";
+            currentAdIndex--;
+            setTimeout(showAdModal, 1000);
+            return;
+          }
+
+          if (adWindow) adWindow.close();
+
+          if (currentAdIndex < adLinks.length) {
+            setTimeout(showAdModal, 1000);
+          } else {
+            downloadLinks.forEach(link => {
+              link.classList.add("enabled");
+              link.style.background = "linear-gradient(45deg, #4CAF50, #81c784, #4CAF50)";
+              link.style.backgroundSize = "200% 100%";
+              link.style.opacity = "1";
+            });
+            
+            gsap.killTweensOf(downloadLinks);
+            if (disabledTween) disabledTween.kill();
+            
+            gsap.to(adModal, { 
+              opacity: 0, 
+              duration: 0.5, 
+              onComplete: () => {
+                adModal.classList.add("hidden");
+                document.body.style.overflow = "auto";
+                window.scrollTo(0, 0);
+                animateEnabledButtons();
+              }
+            });
+          }
+        }
+      }, 1000);
+    }
+
+    startButton.addEventListener("click", () => {
+      gsap.to(startContainer, { opacity: 0, duration: 0.5, onComplete: () => startContainer.style.display = "none" });
+      showAdModal();
+    });
+
+    window.addEventListener("scroll", function () {
+      if (!adModal.classList.contains("hidden")) {
+        window.scrollTo(0, 0);
+      }
+    });
+  </script>
+
+  <script type="text/javascript">
+    atOptions = {
+      'key': 'fd81fe5a4e6c0fd30ed63d26985adfc3',
+      'format': 'iframe',
+      'height': 250,
+      'width': 300,
+      'params': {}
+    };
+  </script>
+  <script type="text/javascript" src="//www.highperformanceformat.com/fd81fe5a4e6c0fd30ed63d26985adfc3/invoke.js"></script>
+  <script type="text/javascript">
+    atOptions = {
+      'key': '5f4387bafe27ab9b6731be3d256a2def',
+      'format': 'iframe',
+      'height': 50,
+      'width': 320,
+      'params': {}
+    };
+  </script>
+  <script type="text/javascript" src="//www.highperformanceformat.com/5f4387bafe27ab9b6731be3d256a2def/invoke.js"></script>
+</body>
+</html>
